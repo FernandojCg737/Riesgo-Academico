@@ -35,5 +35,7 @@ services:
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
     envVars:
+      - key: PORT
+        value: "3000"
       - key: NEXT_PUBLIC_API_URL
         value: https://riesgo-academico-backend-fkk9.onrender.com
