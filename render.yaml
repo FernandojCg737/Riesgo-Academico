@@ -1,3 +1,9 @@
+databases:
+  - name: riesgo-academico-db
+    plan: free
+    databaseName: academic_risk_db
+    user: academic_user
+
 services:
   - type: web
     name: riesgo-academico-backend
@@ -8,7 +14,9 @@ services:
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: riesgo-academico-db
+          property: connectionString
       - key: CORS_ORIGINS
         value: https://riesgo-academico-frontend.onrender.com
       - key: GEMINI_API_KEY
