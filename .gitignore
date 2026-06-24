@@ -1,0 +1,27 @@
+# Env
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# Backend storage (datos generados, no versionados)
+backend/models_storage/*.pkl
+backend/reports_storage/*
+
+# Datos crudos con identificadores sensibles (no versionar)
+backend/data/raw/*.csv
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+
+# OS
+.DS_Store
+Thumbs.db
