@@ -30,6 +30,44 @@ const ERRORES_RECONOCIMIENTO: Record<string, string> = {
   aborted: "",
 };
 
+const PREGUNTAS_SUGERIDAS: { categoria: string; preguntas: string[] }[] = [
+  {
+    categoria: "Datos académicos",
+    preguntas: [
+      "¿Cuál es la tasa de riesgo académico en el dataset histórico?",
+      "¿Qué carrera tiene el mayor porcentaje de estudiantes en riesgo?",
+      "¿Cómo influye el PPA y el PPAC en el riesgo académico?",
+      "¿Repetir una materia aumenta la probabilidad de riesgo?",
+    ],
+  },
+  {
+    categoria: "Modelo predictivo",
+    preguntas: [
+      "¿Qué modelo ganó y por qué se eligió sobre los demás?",
+      "¿Qué significa el Recall y por qué es la métrica más importante aquí?",
+      "¿Cuál es el Accuracy y el F1-Score del modelo final?",
+      "¿Qué variables usa el modelo para predecir el riesgo académico?",
+    ],
+  },
+  {
+    categoria: "Encuesta de IA",
+    preguntas: [
+      "¿Cómo se relaciona el uso de IA con el riesgo académico?",
+      "¿Qué variable de la encuesta se correlaciona más con el riesgo?",
+      "¿La dependencia de IA está asociada a peor rendimiento?",
+    ],
+  },
+  {
+    categoria: "Metodología",
+    preguntas: [
+      "¿Cómo se calcula el umbral de aprobación (51%)?",
+      "¿Qué es SHAP y cómo explica una predicción individual?",
+      "¿Por qué se usó GridSearchCV para entrenar los modelos?",
+      "¿Cuáles son los criterios definidos en el dataset?",
+    ],
+  },
+];
+
 export function ChatPanel() {
   const [mensajes, setMensajes] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -151,10 +189,35 @@ export function ChatPanel() {
     <div className="flex flex-col h-[70vh] border rounded-lg bg-card">
       <ScrollArea className="flex-1 p-4">
         {mensajes.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-8">
-            Preguntame sobre los datos académicos, el modelo predictivo o sus métricas. Tocá el micrófono, hablá tu
-            pregunta y dejá de hablar: se envía sola apenas detecto el silencio, y te respondo también por voz.
-          </p>
+          <div className="py-6 space-y-6">
+            <p className="text-sm text-muted-foreground text-center">
+              Preguntame sobre los datos académicos, el modelo predictivo o sus métricas. Tocá el micrófono, hablá tu
+              pregunta y dejá de hablar: se envía sola apenas detecto el silencio, y te respondo también por voz.
+            </p>
+            <div className="space-y-4">
+              <p className="text-xs font-medium text-muted-foreground text-center">
+                O probá con alguna de estas preguntas:
+              </p>
+              {PREGUNTAS_SUGERIDAS.map((grupo) => (
+                <div key={grupo.categoria}>
+                  <p className="text-xs font-medium text-muted-foreground mb-1.5">{grupo.categoria}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {grupo.preguntas.map((pregunta) => (
+                      <button
+                        key={pregunta}
+                        type="button"
+                        onClick={() => enviarMensaje(pregunta, true)}
+                        disabled={enviando}
+                        className="rounded-full border bg-muted/50 px-3 py-1.5 text-xs text-left hover:bg-muted disabled:opacity-50 transition-colors"
+                      >
+                        {pregunta}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
         <div className="space-y-4">
           {mensajes.map((m, i) => (
