@@ -18,7 +18,7 @@ services:
           name: riesgo-academico-db
           property: connectionString
       - key: CORS_ORIGINS
-        value: https://riesgo-academico-frontend.onrender.com
+        value: https://riesgo-academico-frontend-l3wq.onrender.com
       - key: GEMINI_API_KEY
         sync: false
       - key: MODEL_STORAGE_PATH
@@ -36,4 +36,4 @@ services:
     dockerContext: ./frontend
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        value: https://riesgo-academico-backend.onrender.com
+        value: https://riesgo-academico-backend-fkk9.onrender.com
