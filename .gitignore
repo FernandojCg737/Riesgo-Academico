@@ -13,8 +13,11 @@ __pycache__/
 backend/models_storage/*.pkl
 backend/reports_storage/*
 
-# Datos crudos con identificadores sensibles (no versionar)
+# Datos crudos (bloqueados por defecto; los dos datasets ya anonimizados
+# se permiten explícitamente abajo para que Render pueda sembrarlos en el deploy)
 backend/data/raw/*.csv
+!backend/data/raw/dataset_2017.csv
+!backend/data/raw/dataset_encuesta_ia.csv
 
 # Node / Next.js
 frontend/node_modules/

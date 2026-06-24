@@ -1,0 +1,111 @@
+﻿id_encuesta,carrera,semestre_num,promedio_actual_orden,promedio_actual_estimado,materias_reprobadas_num,horas_estudio_semana_num,asistencia_ordinal,frecuencia_uso_ia_ordinal,dependencia_ia_ordinal,motivacion_ordinal,riesgo_academico_encuesta,riesgo_academico_encuesta_binario
+1,Ingeniería Informática,7,5,68,1.0,21,3,2,3,4,Medio,0
+2,Ingeniería Informática,6,4,63,5.0,10,4,2,2,4,Medio,0
+4,Ingeniería en Sistemas,8,2,53,7.0,21,3,3,2,2,Alto,1
+5,Ingeniería Informática,8,5,68,0.0,10,4,2,2,3,Bajo,0
+6,Ingeniería Informática,8,3,58,7.0,30,3,3,3,4,Alto,1
+7,Ingeniería en Sistemas,7,2,53,5.0,10,3,2,1,3,Alto,1
+8,Ingeniería en Redes y Telecomunicaciones,8,4,63,7.0,10,3,2,2,3,Alto,1
+9,Ingeniería en Sistemas,6,3,58,4.0,21,3,2,2,3,Medio,0
+10,Ingeniería en Sistemas,6,4,63,4.0,10,3,1,1,3,Alto,1
+11,Ingeniería Informática,7,3,58,8.0,10,3,3,2,5,Alto,1
+12,Ingeniería Informática,6,1,45,5.0,30,1,2,2,2,Alto,1
+14,Ingeniería en Sistemas,8,5,68,3.0,3,3,2,2,5,Medio,0
+15,Ingeniería en Redes y Telecomunicaciones,8,3,58,14.0,10,3,2,2,3,Alto,1
+16,Ingeniería Informática,9,4,63,2.0,30,3,3,2,3,Medio,0
+17,Ingeniería Informática,8,2,53,5.0,21,2,2,2,2,Alto,1
+18,Ingeniería en Sistemas,7,4,63,2.0,10,3,3,3,3,Alto,1
+19,Ingeniería en Sistemas,6,2,53,4.0,10,3,2,2,3,Alto,1
+20,Ingeniería en Sistemas,7,5,68,2.0,30,4,3,2,4,Bajo,0
+21,Ingeniería en Sistemas,7,3,58,5.0,21,1,3,2,3,Alto,1
+22,Ingeniería en Sistemas,7,3,58,4.0,10,3,1,1,4,Medio,0
+23,Ingeniería Informática,6,2,53,5.0,10,2,2,2,3,Alto,1
+24,Ingeniería en Sistemas,8,2,53,17.0,10,3,2,2,4,Alto,1
+25,Ingeniería en Sistemas,6,1,45,10.0,21,4,2,2,1,Alto,1
+26,Ingeniería en Sistemas,6,2,53,6.0,10,3,4,3,4,Alto,1
+27,Ingeniería Informática,8,6,73,1.0,21,2,2,2,4,Medio,0
+28,Ingeniería Informática,8,3,58,3.0,10,2,2,2,4,Alto,1
+29,Ingeniería Informática,5,2,53,7.0,10,3,2,2,3,Alto,1
+30,Ingeniería Informática,7,2,53,10.0,3,3,2,2,3,Alto,1
+32,Ingeniería en Redes y Telecomunicaciones,3,2,53,10.0,10,4,1,1,4,Alto,1
+34,Ingeniería Informática,9,7,78,0.0,3,3,3,2,3,Medio,0
+35,Ingeniería Informática,6,2,53,9.0,21,3,2,2,4,Medio,0
+36,Ingeniería Informática,8,2,53,5.0,21,3,2,2,3,Alto,1
+37,Ingeniería Informática,6,2,53,6.0,21,3,4,3,4,Alto,1
+38,Ingeniería Informática,7,1,45,10.0,10,2,2,3,3,Alto,1
+39,Ingeniería Informática,7,2,53,6.0,30,3,3,2,2,Alto,1
+40,Ingeniería en Sistemas,6,2,53,11.0,10,3,3,2,2,Alto,1
+41,Ingeniería en Sistemas,1,0,0,2.0,3,3,2,1,3,Medio,0
+42,Ingeniería en Redes y Telecomunicaciones,9,3,58,0.0,21,3,2,1,4,Medio,0
+44,Ingeniería en Sistemas,8,5,68,2.0,10,3,1,1,4,Medio,0
+45,Ingeniería Informática,7,1,45,4.0,21,4,2,1,3,Alto,1
+46,Ingeniería Informática,7,4,63,5.0,21,4,0,0,1,Alto,1
+47,Ingeniería Informática,8,2,53,4.0,10,2,2,2,1,Alto,1
+48,Ingeniería Informática,7,1,45,10.0,10,4,1,1,4,Medio,0
+49,Ingeniería Informática,7,2,53,14.0,3,2,2,2,2,Alto,1
+51,Ingeniería Informática,8,2,53,7.0,21,4,2,1,5,Medio,0
+52,Ingeniería en Sistemas,9,4,63,8.0,3,2,4,3,3,Alto,1
+53,Ingeniería en Sistemas,9,5,68,3.0,30,4,3,2,3,Medio,0
+54,Ingeniería en Sistemas,9,3,58,5.0,10,2,2,2,5,Alto,1
+55,Ingeniería en Sistemas,9,6,73,0.0,30,3,3,1,4,Bajo,0
+56,Ingeniería Informática,9,4,63,6.0,3,3,1,2,3,Alto,1
+57,Ingeniería Informática,9,3,58,5.0,21,4,2,2,3,Medio,0
+58,Ingeniería en Sistemas,6,5,68,4.0,10,3,1,1,3,Medio,0
+59,Ingeniería Informática,9,5,68,3.0,21,4,2,1,4,Bajo,0
+60,Ingeniería en Sistemas,8,6,73,0.0,10,3,2,1,4,Bajo,0
+61,Ingeniería en Sistemas,9,5,68,4.0,30,3,4,3,3,Alto,1
+62,Ingeniería en Sistemas,8,7,78,0.0,21,3,2,2,4,Bajo,0
+63,Ingeniería Informática,8,6,73,2.0,3,2,2,1,3,Medio,0
+64,Ingeniería en Sistemas,7,2,53,11.0,21,4,2,1,2,Alto,1
+65,Ingeniería en Sistemas,8,6,73,1.0,21,3,2,2,3,Medio,0
+66,Ingeniería en Sistemas,8,3,58,,21,3,1,1,3,Medio,0
+67,Ingeniería en Sistemas,6,6,73,3.0,3,4,2,2,3,Medio,0
+68,Ingeniería en Sistemas,9,5,68,4.0,21,2,2,1,1,Medio,0
+69,Ingeniería en Sistemas,7,4,63,4.0,21,3,3,2,3,Alto,1
+70,Ingeniería en Sistemas,8,2,53,4.0,21,3,2,2,4,Medio,0
+71,Ingeniería Informática,9,6,73,1.0,3,1,2,1,3,Medio,0
+72,Ingeniería Informática,9,5,68,1.0,30,4,3,2,4,Medio,0
+73,Ingeniería Informática,8,2,53,3.0,10,3,2,2,4,Alto,1
+74,Ingeniería Informática,8,2,53,3.0,10,2,2,2,4,Alto,1
+75,Ingeniería en Sistemas,8,4,63,10.0,21,2,3,3,5,Alto,1
+76,Ingeniería Informática,8,1,45,5.0,30,3,2,2,2,Alto,1
+77,Ingeniería en Sistemas,8,3,58,6.0,10,2,3,3,3,Alto,1
+78,Ingeniería en Sistemas,5,2,53,5.0,10,4,2,1,3,Alto,1
+79,Ingeniería en Sistemas,4,2,53,4.0,10,4,2,1,3,Alto,1
+81,Ingeniería en Sistemas,8,6,73,2.0,10,3,2,2,4,Medio,0
+82,Ingeniería en Sistemas,7,4,63,6.0,30,2,3,2,4,Medio,0
+83,Ingeniería en Sistemas,8,7,78,1.0,10,3,2,2,2,Medio,0
+84,Ingeniería en Sistemas,8,2,53,5.0,21,3,2,2,1,Alto,1
+85,Ingeniería Informática,5,4,63,1.0,10,3,4,2,3,Medio,0
+86,Ingeniería en Sistemas,5,4,63,4.0,10,4,3,2,2,Medio,0
+87,Ingeniería en Redes y Telecomunicaciones,6,5,68,5.0,10,3,2,3,4,Medio,0
+88,Ingeniería en Sistemas,5,2,53,0.0,10,3,4,2,1,Alto,1
+89,Ingeniería en Sistemas,6,5,68,0.0,21,4,2,2,1,Bajo,0
+90,Ingeniería Informática,5,1,45,6.0,10,4,2,2,4,Alto,1
+91,Ingeniería en Sistemas,3,8,85,0.0,10,3,2,2,3,Medio,0
+92,Ingeniería en Sistemas,1,0,0,0.0,21,4,2,1,4,Bajo,0
+93,Ingeniería Informática,7,6,73,0.0,30,1,3,3,3,Medio,0
+94,Ingeniería en Sistemas,6,4,63,8.0,30,2,3,2,5,Medio,0
+95,Ingeniería en Sistemas,8,2,53,5.0,10,2,2,2,5,Alto,1
+96,Ingeniería en Sistemas,8,3,58,10.0,30,1,1,1,3,Alto,1
+97,Ingeniería en Sistemas,6,5,68,2.0,30,3,3,2,4,Medio,0
+98,Ingeniería Informática,1,0,0,0.0,3,4,1,2,4,Bajo,0
+99,Ingeniería en Sistemas,7,5,68,2.0,30,4,3,2,5,Bajo,0
+100,Ingeniería Informática,5,1,45,3.0,10,3,1,1,3,Alto,1
+101,Ingeniería Informática,6,4,63,2.0,10,2,2,2,2,Alto,1
+102,Ingeniería Informática,6,1,45,9.0,21,3,2,2,4,Alto,1
+103,Ingeniería en Sistemas,7,4,63,0.0,30,4,2,2,5,Bajo,0
+104,Ingeniería en Sistemas,7,6,73,1.0,30,4,3,2,4,Bajo,0
+105,Ingeniería en Sistemas,7,8,85,0.0,30,4,2,2,2,Bajo,0
+106,Ingeniería Informática,8,3,58,0.0,10,3,1,2,4,Medio,0
+107,Ingeniería Informática,5,1,45,5.0,3,4,1,2,3,Alto,1
+108,Ingeniería en Sistemas,7,6,73,0.0,21,4,1,2,4,Bajo,0
+109,Ingeniería en Sistemas,5,2,53,3.0,10,3,2,2,2,Alto,1
+110,Ingeniería en Sistemas,8,5,68,2.0,30,4,2,2,4,Bajo,0
+111,Ingeniería en Sistemas,7,4,63,2.0,10,3,2,3,3,Alto,1
+112,Ingeniería Informática,8,2,53,5.0,30,4,2,2,4,Medio,0
+113,Ingeniería en Sistemas,3,8,85,0.0,3,2,4,2,3,Medio,0
+114,Ingeniería en Sistemas,7,2,53,10.0,30,3,4,2,3,Alto,1
+115,Ingeniería en Redes y Telecomunicaciones,3,2,53,3.0,3,4,1,2,3,Alto,1
+116,Ingeniería en Sistemas,5,2,53,4.0,21,4,2,2,1,Alto,1
+117,Ingeniería Informática,8,6,73,3.0,10,4,3,2,2,Alto,1
