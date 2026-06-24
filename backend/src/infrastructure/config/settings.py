@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     test_size: float = 0.2
 
     gemini_api_key: str = ""
+    gemini_api_key_backup: str = ""
 
     @property
     def cors_origins_list(self) -> list[str]:

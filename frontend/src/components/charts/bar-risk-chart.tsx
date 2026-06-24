@@ -38,15 +38,24 @@ function ChartTooltip({ active, payload, label, yLabel }: ChartTooltipProps) {
 }
 
 export function BarRiskChart({ data, xKey, yKey, yLabel, color = "var(--chart-1)", height = 320 }: BarRiskChartProps) {
+  // En pantallas angostas, forzamos un ancho mínimo proporcional a la cantidad de
+  // categorías para que las etiquetas rotadas nunca se amontonen ni se corten;
+  // el contenedor scrollea horizontalmente en vez de comprimir el gráfico.
+  const minWidth = Math.max(data.length * 70, 320);
+
   return (
-    <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey={xKey} tick={{ fontSize: 12 }} interval={0} angle={-15} textAnchor="end" height={60} />
-        <YAxis tick={{ fontSize: 12 }} label={yLabel ? { value: yLabel, angle: -90, position: "insideLeft", fontSize: 12 } : undefined} />
-        <Tooltip content={<ChartTooltip yLabel={yLabel} />} cursor={{ fill: "var(--muted)" }} />
-        <Bar dataKey={yKey} fill={color} radius={[4, 4, 0, 0]} />
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="overflow-x-auto">
+      <div style={{ minWidth }}>
+        <ResponsiveContainer width="100%" height={height}>
+          <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey={xKey} tick={{ fontSize: 12 }} interval={0} angle={-30} textAnchor="end" height={65} />
+            <YAxis tick={{ fontSize: 12 }} label={yLabel ? { value: yLabel, angle: -90, position: "insideLeft", fontSize: 12 } : undefined} />
+            <Tooltip content={<ChartTooltip yLabel={yLabel} />} cursor={{ fill: "var(--muted)" }} />
+            <Bar dataKey={yKey} fill={color} radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }

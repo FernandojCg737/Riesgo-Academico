@@ -34,18 +34,24 @@ export function HistogramChart({ bins, umbral, height = 320 }: HistogramChartPro
     count: b.count,
   }));
 
+  const minWidth = Math.max(data.length * 36, 320);
+
   return (
-    <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey="rango" tick={{ fontSize: 11 }} interval={1} />
-        <YAxis tick={{ fontSize: 12 }} />
-        <Tooltip content={<ChartTooltip />} cursor={{ fill: "var(--muted)" }} />
-        <Bar dataKey="count" fill="var(--chart-1)" radius={[3, 3, 0, 0]} />
-        {umbral !== undefined && (
-          <ReferenceLine x={`${Math.floor(umbral / 5) * 5}-${Math.ceil(umbral / 5) * 5 + 5}`} stroke="var(--chart-4)" strokeDasharray="4 4" />
-        )}
-      </BarChart>
-    </ResponsiveContainer>
+    <div className="overflow-x-auto">
+      <div style={{ minWidth }}>
+        <ResponsiveContainer width="100%" height={height}>
+          <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 10 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="rango" tick={{ fontSize: 11 }} interval={0} angle={-30} textAnchor="end" height={50} />
+            <YAxis tick={{ fontSize: 12 }} />
+            <Tooltip content={<ChartTooltip />} cursor={{ fill: "var(--muted)" }} />
+            <Bar dataKey="count" fill="var(--chart-1)" radius={[3, 3, 0, 0]} />
+            {umbral !== undefined && (
+              <ReferenceLine x={`${Math.floor(umbral / 5) * 5}-${Math.ceil(umbral / 5) * 5 + 5}`} stroke="var(--chart-4)" strokeDasharray="4 4" />
+            )}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }

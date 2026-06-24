@@ -13,8 +13,22 @@ import { apiClient, ApiError } from "@/lib/api-client";
 import type { ChatMessage } from "@/lib/types";
 
 interface SpeechRecognitionResultLike {
-  results: { [index: number]: { [index: number]: { transcript: string } } };
+  resultIndex: number;
+  results: { length: number; [index: number]: { isFinal: boolean; [index: number]: { transcript: string } } };
 }
+
+// Tiempo de silencio para asumir que la persona terminó de hablar y disparar
+// el envío solo; antes de la primera palabra se tolera más espera (arranque).
+const SILENCIO_TRAS_HABLAR_MS = 1800;
+const SILENCIO_INICIAL_MS = 6000;
+
+const ERRORES_RECONOCIMIENTO: Record<string, string> = {
+  "no-speech": "No se detectó voz. Acercate al micrófono e intentá de nuevo.",
+  "audio-capture": "No se encontró un micrófono disponible.",
+  "not-allowed": "Permiso de micrófono denegado. Habilitalo en el navegador.",
+  network: "Error de red en el reconocimiento de voz. Revisá tu conexión.",
+  aborted: "",
+};
 
 export function ChatPanel() {
   const [mensajes, setMensajes] = useState<ChatMessage[]>([]);
@@ -74,24 +88,54 @@ export function ChatPanel() {
     const reconocimiento = new (SpeechRecognitionCtor as new () => {
       lang: string;
       interimResults: boolean;
+      continuous: boolean;
       onresult: (e: SpeechRecognitionResultLike) => void;
       onend: () => void;
-      onerror: () => void;
+      onerror: (e: { error: string }) => void;
       start: () => void;
       stop: () => void;
     })();
 
-    reconocimiento.lang = "es-ES";
-    reconocimiento.interimResults = false;
-    reconocimiento.onresult = (event: SpeechRecognitionResultLike) => {
-      const texto = event.results[0][0].transcript;
-      enviarMensaje(texto, true);
+    // "continuous" evita que el reconocimiento se corte ante una pausa natural
+    // al hablar; en su lugar, un temporizador propio de silencio decide cuándo
+    // la persona terminó de hablar y detiene la escucha automáticamente.
+    reconocimiento.lang = "es-BO";
+    reconocimiento.interimResults = true;
+    reconocimiento.continuous = true;
+
+    const fragmentos: string[] = [];
+    let silenceTimer: ReturnType<typeof setTimeout>;
+    const armarTimerSilencio = (ms: number) => {
+      clearTimeout(silenceTimer);
+      silenceTimer = setTimeout(() => reconocimiento.stop(), ms);
     };
-    reconocimiento.onend = () => setEscuchando(false);
-    reconocimiento.onerror = () => setEscuchando(false);
+
+    reconocimiento.onresult = (event: SpeechRecognitionResultLike) => {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          fragmentos.push(event.results[i][0].transcript);
+        }
+      }
+      // Cualquier resultado (interino o final) indica que la persona sigue
+      // hablando: reiniciamos la cuenta de silencio.
+      armarTimerSilencio(SILENCIO_TRAS_HABLAR_MS);
+    };
+    reconocimiento.onend = () => {
+      clearTimeout(silenceTimer);
+      setEscuchando(false);
+      const texto = fragmentos.join(" ").trim();
+      if (texto) enviarMensaje(texto, true);
+    };
+    reconocimiento.onerror = (event: { error: string }) => {
+      clearTimeout(silenceTimer);
+      setEscuchando(false);
+      const mensaje = ERRORES_RECONOCIMIENTO[event.error];
+      if (mensaje) toast.error("Reconocimiento de voz", { description: mensaje });
+    };
 
     reconocimientoRef.current = reconocimiento;
     reconocimiento.start();
+    armarTimerSilencio(SILENCIO_INICIAL_MS);
     setEscuchando(true);
   }
 
@@ -108,8 +152,8 @@ export function ChatPanel() {
       <ScrollArea className="flex-1 p-4">
         {mensajes.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-8">
-            Preguntame sobre los datos académicos, el modelo predictivo o sus métricas. Tocá el micrófono y hablá tu
-            pregunta: se envía sola y te respondo también por voz.
+            Preguntame sobre los datos académicos, el modelo predictivo o sus métricas. Tocá el micrófono, hablá tu
+            pregunta y dejá de hablar: se envía sola apenas detecto el silencio, y te respondo también por voz.
           </p>
         )}
         <div className="space-y-4">

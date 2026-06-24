@@ -51,15 +51,15 @@ class ChatbotService:
         )
 
     def responder(self, db: Session, mensajes: List[Dict[str, str]]) -> str:
-        if not settings.gemini_api_key:
+        api_keys = [k for k in (settings.gemini_api_key, settings.gemini_api_key_backup) if k]
+        if not api_keys:
             raise RuntimeError("Chatbot no configurado: falta GEMINI_API_KEY")
 
         from google import genai
+        from google.genai import errors as genai_errors
         from google.genai import types
 
         contexto = self.construir_contexto(db)
-        cliente = genai.Client(api_key=settings.gemini_api_key)
-
         contenidos = [
             types.Content(
                 role="model" if m["role"] == "assistant" else "user",
@@ -68,13 +68,31 @@ class ChatbotService:
             for m in mensajes
         ]
 
-        respuesta = cliente.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=contenidos,
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT_BASE.format(contexto=contexto),
-                max_output_tokens=512,
-            ),
-        )
+        # Si la key principal agotó su cuota gratuita diaria (429), reintenta
+        # automáticamente con la key de respaldo antes de fallar.
+        for indice, api_key in enumerate(api_keys):
+            es_ultima = indice == len(api_keys) - 1
+            cliente = genai.Client(api_key=api_key)
+            try:
+                respuesta = cliente.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=contenidos,
+                    config=types.GenerateContentConfig(
+                        system_instruction=SYSTEM_PROMPT_BASE.format(contexto=contexto),
+                        max_output_tokens=512,
+                    ),
+                )
+                return respuesta.text or ""
+            except genai_errors.ClientError as e:
+                if e.code == 429 and not es_ultima:
+                    continue
+                if e.code == 429:
+                    raise RuntimeError(
+                        "El chatbot alcanzó el límite de consultas gratuitas de la IA por ahora. "
+                        "Esperá unos minutos e intentá de nuevo."
+                    ) from e
+                raise RuntimeError(f"El servicio de IA rechazó la consulta ({e.status}).") from e
+            except genai_errors.APIError as e:
+                raise RuntimeError(f"El servicio de IA no está disponible en este momento ({e.status}).") from e
 
-        return respuesta.text or ""
+        raise RuntimeError("El chatbot no pudo responder en este momento.")

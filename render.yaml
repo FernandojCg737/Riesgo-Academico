@@ -21,6 +21,8 @@ services:
         value: https://riesgo-academico-frontend-l3wq.onrender.com
       - key: GEMINI_API_KEY
         sync: false
+      - key: GEMINI_API_KEY_BACKUP
+        sync: false
       - key: MODEL_STORAGE_PATH
         value: /app/models_storage
       - key: REPORTS_STORAGE_PATH
