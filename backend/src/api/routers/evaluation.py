@@ -1,13 +1,16 @@
-from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Query, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.api.deps import get_db
+from src.api.routers.academic_data import obtener_resumen
 from src.application.use_cases.evaluate_models import EvaluateModels
 from src.application.use_cases.select_best_model import SelectBestModel
 from src.application.services.model_explanation_service import ModelExplanationService
+from src.application.services.report_pdf_service import ReportPdfService
 from src.infrastructure.db.models.trained_model_model import ModeloEntrenado
 from src.infrastructure.db.models.model_evaluation_model import EvaluacionModelo
+from src.infrastructure.repositories.dataset_repository import DatasetRepository
 from src.infrastructure.repositories.model_repository import ModelRepository
 
 router = APIRouter(prefix="/api/evaluation", tags=["evaluation"])
@@ -130,3 +133,30 @@ def obtener_reglas_decision_tree(dataset_id: int = Query(...)):
 
     reglas = ModelExplanationService().obtener_reglas_decision_tree(pipeline)
     return {"reglas": reglas}
+
+
+@router.get("/report-pdf")
+def descargar_reporte_pdf(dataset_id: int = Query(...), db: Session = Depends(get_db)):
+    dataset = DatasetRepository().obtener(dataset_id)
+    if not dataset:
+        raise HTTPException(status_code=404, detail="Dataset no encontrado.")
+
+    resumen = obtener_resumen(dataset_id=dataset_id, db=db)
+    metricas = obtener_metricas(dataset_id=dataset_id, db=db)
+    try:
+        mejor_modelo = obtener_mejor_modelo(dataset_id=dataset_id, db=db)
+    except HTTPException:
+        mejor_modelo = None
+
+    pdf_bytes = ReportPdfService().generar_reporte_metricas(
+        dataset_nombre=dataset.nombre,
+        resumen=resumen,
+        mejor_modelo=mejor_modelo,
+        metricas=metricas,
+    )
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="reporte_riesgo_academico_{dataset_id}.pdf"'},
+    )

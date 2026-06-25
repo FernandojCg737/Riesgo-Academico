@@ -26,8 +26,20 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json();
 }
 
+async function requestBlob(path: string): Promise<Blob> {
+  const response = await fetch(`${API_URL}${path}`, { cache: "no-store" });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({ detail: response.statusText }));
+    throw new ApiError(response.status, body.detail || "Error desconocido al consultar la API");
+  }
+
+  return response.blob();
+}
+
 export const apiClient = {
   get: <T>(path: string) => request<T>(path),
+  getBlob: (path: string) => requestBlob(path),
   post: <T>(path: string, data?: unknown) =>
     request<T>(path, {
       method: "POST",

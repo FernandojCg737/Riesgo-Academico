@@ -16,3 +16,4 @@ httpx
 google-genai
 openpyxl
 python-multipart
+reportlab

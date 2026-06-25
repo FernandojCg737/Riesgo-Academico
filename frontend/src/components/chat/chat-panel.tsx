@@ -190,7 +190,7 @@ export function ChatPanel() {
 
   return (
     <div className="flex flex-col h-[70vh] border rounded-lg bg-card">
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="min-h-0 flex-1 p-4">
         {mensajes.length === 0 && (
           <div className="py-6 space-y-6">
             <p className="text-sm text-muted-foreground text-center">
@@ -211,7 +211,7 @@ export function ChatPanel() {
                         type="button"
                         onClick={() => enviarMensaje(pregunta, true)}
                         disabled={enviando}
-                        className="rounded-full border bg-muted/50 px-3 py-1.5 text-xs text-left hover:bg-muted disabled:opacity-50 transition-colors"
+                        className="max-w-full rounded-full border bg-muted/50 px-3 py-1.5 text-xs text-left whitespace-normal break-words hover:bg-muted disabled:opacity-50 transition-colors"
                       >
                         {pregunta}
                       </button>
