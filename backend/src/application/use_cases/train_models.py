@@ -44,13 +44,15 @@ def _extraer_hiperparametros(pipeline, algoritmo: str) -> dict | None:
 class TrainModels:
     def __init__(
         self,
+        dataset_id: int,
         academic_repo: AcademicRepository = None,
         model_repo: ModelRepository = None,
         preproc_service: PreprocessingService = None,
         train_service: ModelTrainingService = None
     ):
+        self.dataset_id = dataset_id
         self.academic_repo = academic_repo or AcademicRepository()
-        self.model_repo = model_repo or ModelRepository()
+        self.model_repo = model_repo or ModelRepository(dataset_id=dataset_id)
         self.preproc_service = preproc_service or PreprocessingService()
         self.train_service = train_service or ModelTrainingService()
 
@@ -66,11 +68,14 @@ class TrainModels:
 
         with SessionLocal() as session:
             modelo = session.execute(
-                select(ModeloEntrenado).where(ModeloEntrenado.nombre_interno == nombre_interno)
+                select(ModeloEntrenado).where(
+                    ModeloEntrenado.nombre_interno == nombre_interno,
+                    ModeloEntrenado.dataset_id == self.dataset_id,
+                )
             ).scalar_one_or_none()
 
             if modelo is None:
-                modelo = ModeloEntrenado(nombre_interno=nombre_interno)
+                modelo = ModeloEntrenado(nombre_interno=nombre_interno, dataset_id=self.dataset_id)
                 session.add(modelo)
 
             modelo.nombre_legible = NOMBRES_LEGIBLES[nombre_interno]
@@ -82,9 +87,9 @@ class TrainModels:
             session.commit()
 
     def ejecutar(self) -> None:
-        print("Ejecutando caso de uso: Entrenar Modelos...")
+        print(f"Ejecutando caso de uso: Entrenar Modelos (dataset_id={self.dataset_id})...")
 
-        df = self.academic_repo.cargar_modelo_dataset()
+        df = self.academic_repo.cargar_modelo_dataset(self.dataset_id)
         print(f"  Cargados {len(df)} registros para entrenamiento.")
 
         X, y, groups = self.preproc_service.separar_predictores_y_objetivo(df)

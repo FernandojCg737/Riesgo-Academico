@@ -9,7 +9,7 @@ router = APIRouter(prefix="/api/data", tags=["data-ingestion"])
 @router.post("/ingest/academic")
 def ingest_academic():
     try:
-        PrepareAcademicDataset().ejecutar()
+        PrepareAcademicDataset().ejecutar(dataset_id=1)
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     return {"status": "ok", "mensaje": "Dataset académico ingerido correctamente."}

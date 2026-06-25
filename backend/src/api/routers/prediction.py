@@ -12,6 +12,7 @@ router = APIRouter(prefix="/api/predict", tags=["prediction"])
 
 
 class PrediccionRequest(BaseModel):
+    dataset_id: int = 1
     carrera_alumno: str
     codigo_materia: str
     nivel_materia: int = Field(ge=1, le=9)
@@ -41,7 +42,7 @@ class PrediccionResponse(BaseModel):
 @router.post("", response_model=PrediccionResponse)
 def predecir_riesgo(payload: PrediccionRequest, db: Session = Depends(get_db)):
     try:
-        resultado = PredictAcademicRisk().ejecutar(
+        resultado = PredictAcademicRisk(dataset_id=payload.dataset_id).ejecutar(
             carrera_alumno=payload.carrera_alumno,
             codigo_materia=payload.codigo_materia,
             nivel_materia=payload.nivel_materia,

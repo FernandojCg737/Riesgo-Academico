@@ -10,13 +10,21 @@ import { BoxplotChart } from "@/components/charts/boxplot-chart";
 import { useApi } from "@/hooks/use-api";
 import { riesgoPorCarrera, riesgoPorNivel, top10Materias } from "@/lib/chart-aggregations";
 import type { BoxplotStats, DistribucionNotas, RegistrosAcademicosResponse, RiesgoPorCategoria } from "@/lib/types";
+import { useDataset } from "@/contexts/dataset-context";
 
 export default function DatosAcademicosPage() {
+  const { datasetId } = useDataset();
   const [carrera, setCarrera] = useState("todas");
   const [nivel, setNivel] = useState("todos");
 
-  const { data: opcionesCarrera } = useApi<RiesgoPorCategoria[]>("/api/charts/academic/riesgo-por-carrera");
-  const { data: opcionesNivel } = useApi<RiesgoPorCategoria[]>("/api/charts/academic/riesgo-por-nivel");
+  const { data: opcionesCarrera } = useApi<RiesgoPorCategoria[]>(
+    `/api/charts/academic/riesgo-por-carrera?dataset_id=${datasetId}`,
+    [datasetId]
+  );
+  const { data: opcionesNivel } = useApi<RiesgoPorCategoria[]>(
+    `/api/charts/academic/riesgo-por-nivel?dataset_id=${datasetId}`,
+    [datasetId]
+  );
 
   const carreras = useMemo(() => (opcionesCarrera ?? []).map((d) => String(d.carrera_alumno)), [opcionesCarrera]);
   const niveles = useMemo(
@@ -26,11 +34,11 @@ export default function DatosAcademicosPage() {
 
   const hayFiltro = carrera !== "todas" || nivel !== "todos";
   const recordsPath = useMemo(() => {
-    const params = new URLSearchParams({ page_size: "10000" });
+    const params = new URLSearchParams({ page_size: "10000", dataset_id: String(datasetId) });
     if (carrera !== "todas") params.set("carrera_alumno", carrera);
     if (nivel !== "todos") params.set("nivel_materia", nivel);
     return `/api/academic/records?${params.toString()}`;
-  }, [carrera, nivel]);
+  }, [carrera, nivel, datasetId]);
 
   return (
     <div>
@@ -49,16 +57,16 @@ export default function DatosAcademicosPage() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ChartCard<DistribucionNotas> title="Distribución de la Nota Final" path="/api/charts/academic/distribucion-notas">
+        <ChartCard<DistribucionNotas> title="Distribución de la Nota Final" path={`/api/charts/academic/distribucion-notas?dataset_id=${datasetId}`}>
           {(data) => <HistogramChart bins={data.bins} umbral={data.umbral_aprobacion} />}
         </ChartCard>
 
-        <ChartCard<RiesgoPorCategoria[]> title="Cantidad por Estado de Riesgo" path="/api/charts/academic/cantidad-riesgo">
+        <ChartCard<RiesgoPorCategoria[]> title="Cantidad por Estado de Riesgo" path={`/api/charts/academic/cantidad-riesgo?dataset_id=${datasetId}`}>
           {(data) => <BarRiskChart data={data} xKey="etiqueta" yKey="cantidad" yLabel="Cantidad" />}
         </ChartCard>
 
         {!hayFiltro ? (
-          <ChartCard<RiesgoPorCategoria[]> key="nivel-agg" title="Riesgo por Nivel de Materia" path="/api/charts/academic/riesgo-por-nivel">
+          <ChartCard<RiesgoPorCategoria[]> key="nivel-agg" title="Riesgo por Nivel de Materia" path={`/api/charts/academic/riesgo-por-nivel?dataset_id=${datasetId}`}>
             {(data) => <BarRiskChart data={data} xKey="nivel_materia" yKey="porcentaje_riesgo" yLabel="% en Riesgo" />}
           </ChartCard>
         ) : (
@@ -68,7 +76,7 @@ export default function DatosAcademicosPage() {
         )}
 
         {!hayFiltro ? (
-          <ChartCard<RiesgoPorCategoria[]> key="carrera-agg" title="Riesgo por Carrera" path="/api/charts/academic/riesgo-por-carrera">
+          <ChartCard<RiesgoPorCategoria[]> key="carrera-agg" title="Riesgo por Carrera" path={`/api/charts/academic/riesgo-por-carrera?dataset_id=${datasetId}`}>
             {(data) => <BarRiskChart data={data} xKey="carrera_alumno" yKey="porcentaje_riesgo" yLabel="% en Riesgo" color="var(--chart-3)" />}
           </ChartCard>
         ) : (
@@ -78,7 +86,7 @@ export default function DatosAcademicosPage() {
         )}
 
         {!hayFiltro ? (
-          <ChartCard<RiesgoPorCategoria[]> key="top10-agg" title="Top 10 Materias con Mayor Riesgo" path="/api/charts/academic/top10-materias">
+          <ChartCard<RiesgoPorCategoria[]> key="top10-agg" title="Top 10 Materias con Mayor Riesgo" path={`/api/charts/academic/top10-materias?dataset_id=${datasetId}`}>
             {(data) => <BarRiskChart data={data} xKey="materia" yKey="porcentaje_riesgo" yLabel="% en Riesgo" color="var(--chart-4)" />}
           </ChartCard>
         ) : (
@@ -87,15 +95,15 @@ export default function DatosAcademicosPage() {
           </ChartCard>
         )}
 
-        <ChartCard<RiesgoPorCategoria[]> title="Riesgo según Condición de Repetición" path="/api/charts/academic/riesgo-por-repite">
+        <ChartCard<RiesgoPorCategoria[]> title="Riesgo según Condición de Repetición" path={`/api/charts/academic/riesgo-por-repite?dataset_id=${datasetId}`}>
           {(data) => <BarRiskChart data={data} xKey="etiqueta" yKey="porcentaje_riesgo" yLabel="% en Riesgo" />}
         </ChartCard>
 
-        <ChartCard<BoxplotStats[]> title="PPA según Riesgo" path="/api/charts/academic/ppa-vs-riesgo">
+        <ChartCard<BoxplotStats[]> title="PPA según Riesgo" path={`/api/charts/academic/ppa-vs-riesgo?dataset_id=${datasetId}`}>
           {(data) => <BoxplotChart data={data} labelKey="etiqueta" />}
         </ChartCard>
 
-        <ChartCard<BoxplotStats[]> title="PPAC según Riesgo" path="/api/charts/academic/ppac-vs-riesgo">
+        <ChartCard<BoxplotStats[]> title="PPAC según Riesgo" path={`/api/charts/academic/ppac-vs-riesgo?dataset_id=${datasetId}`}>
           {(data) => <BoxplotChart data={data} labelKey="etiqueta" color="var(--chart-3)" />}
         </ChartCard>
       </div>

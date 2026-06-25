@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, Float, Integer, String, func
+from sqlalchemy import Date, DateTime, Float, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.infrastructure.db.base import Base
@@ -10,6 +10,7 @@ class RegistroAcademico(Base):
     __tablename__ = "registros_academicos"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    dataset_id: Mapped[int] = mapped_column(ForeignKey("datasets.id"), nullable=False, index=True)
     id_estudiante: Mapped[int] = mapped_column(Integer, index=True, nullable=False)
     carrera_alumno: Mapped[str] = mapped_column(String, index=True, nullable=False)
     codigo_materia: Mapped[str] = mapped_column(String, index=True, nullable=False)

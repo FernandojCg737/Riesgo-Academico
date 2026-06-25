@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -12,40 +12,47 @@ from src.infrastructure.repositories.model_repository import ModelRepository
 
 router = APIRouter(prefix="/api/evaluation", tags=["evaluation"])
 
-_estado_evaluacion = {"status": "idle", "error": None}
+_estados_evaluacion: dict[int, dict] = {}
 
 
-def _ejecutar_evaluacion_y_seleccion():
-    _estado_evaluacion["status"] = "running"
-    _estado_evaluacion["error"] = None
+def _estado_de(dataset_id: int) -> dict:
+    return _estados_evaluacion.setdefault(dataset_id, {"status": "idle", "error": None})
+
+
+def _ejecutar_evaluacion_y_seleccion(dataset_id: int):
+    estado = _estado_de(dataset_id)
+    estado["status"] = "running"
+    estado["error"] = None
     try:
-        EvaluateModels().ejecutar()
-        SelectBestModel().ejecutar()
-        _estado_evaluacion["status"] = "done"
+        EvaluateModels(dataset_id=dataset_id).ejecutar()
+        SelectBestModel(dataset_id=dataset_id).ejecutar()
+        estado["status"] = "done"
     except Exception as e:
-        _estado_evaluacion["status"] = "error"
-        _estado_evaluacion["error"] = str(e)
+        estado["status"] = "error"
+        estado["error"] = str(e)
 
 
 @router.post("/run")
-def ejecutar_evaluacion(background_tasks: BackgroundTasks):
-    if _estado_evaluacion["status"] == "running":
+def ejecutar_evaluacion(background_tasks: BackgroundTasks, dataset_id: int = Body(..., embed=True)):
+    estado = _estado_de(dataset_id)
+    if estado["status"] == "running":
         return {"status": "running", "mensaje": "Ya hay una evaluación en curso."}
 
-    background_tasks.add_task(_ejecutar_evaluacion_y_seleccion)
+    background_tasks.add_task(_ejecutar_evaluacion_y_seleccion, dataset_id)
     return {"status": "started", "mensaje": "Evaluación y selección iniciadas en segundo plano."}
 
 
 @router.get("/status")
-def obtener_estado_evaluacion():
-    return _estado_evaluacion
+def obtener_estado_evaluacion(dataset_id: int = Query(...)):
+    return _estado_de(dataset_id)
 
 
 @router.get("/metrics")
-def obtener_metricas(db: Session = Depends(get_db)):
+def obtener_metricas(dataset_id: int = Query(...), db: Session = Depends(get_db)):
     filas = db.execute(
         select(ModeloEntrenado, EvaluacionModelo)
         .join(EvaluacionModelo, EvaluacionModelo.modelo_id == ModeloEntrenado.id)
+        .where(ModeloEntrenado.dataset_id == dataset_id)
         .order_by(ModeloEntrenado.id)
     ).all()
 
@@ -74,11 +81,11 @@ def obtener_metricas(db: Session = Depends(get_db)):
 
 
 @router.get("/best-model")
-def obtener_mejor_modelo(db: Session = Depends(get_db)):
+def obtener_mejor_modelo(dataset_id: int = Query(...), db: Session = Depends(get_db)):
     fila = db.execute(
         select(ModeloEntrenado, EvaluacionModelo)
         .join(EvaluacionModelo, EvaluacionModelo.modelo_id == ModeloEntrenado.id)
-        .where(ModeloEntrenado.es_modelo_final.is_(True))
+        .where(ModeloEntrenado.dataset_id == dataset_id, ModeloEntrenado.es_modelo_final.is_(True))
     ).first()
 
     if not fila:
@@ -99,9 +106,9 @@ def obtener_mejor_modelo(db: Session = Depends(get_db)):
 
 
 @router.get("/feature-importance")
-def obtener_importancia_variables(grouped: bool = False):
+def obtener_importancia_variables(dataset_id: int = Query(...), grouped: bool = False):
     try:
-        pipeline = ModelRepository().cargar_modelo_final()
+        pipeline = ModelRepository(dataset_id=dataset_id).cargar_modelo_final()
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -115,9 +122,9 @@ def obtener_importancia_variables(grouped: bool = False):
 
 
 @router.get("/decision-tree-rules")
-def obtener_reglas_decision_tree():
+def obtener_reglas_decision_tree(dataset_id: int = Query(...)):
     try:
-        pipeline = ModelRepository().cargar_modelo_final()
+        pipeline = ModelRepository(dataset_id=dataset_id).cargar_modelo_final()
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
 

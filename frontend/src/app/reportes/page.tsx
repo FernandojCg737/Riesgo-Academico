@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useApi } from "@/hooks/use-api";
 import type { MejorModelo, MetricaModelo, ResumenAcademico } from "@/lib/types";
 import { Download } from "lucide-react";
+import { useDataset } from "@/contexts/dataset-context";
 
 function descargarCsv(metricas: MetricaModelo[]) {
   const encabezados = [
@@ -28,10 +29,11 @@ function descargarCsv(metricas: MetricaModelo[]) {
 }
 
 export default function ReportesPage() {
-  const resumen = useApi<ResumenAcademico>("/api/academic/summary");
-  const mejorModelo = useApi<MejorModelo>("/api/evaluation/best-model");
-  const metrics = useApi<MetricaModelo[]>("/api/evaluation/metrics");
-  const reglas = useApi<{ reglas: string }>("/api/evaluation/decision-tree-rules");
+  const { datasetId } = useDataset();
+  const resumen = useApi<ResumenAcademico>(`/api/academic/summary?dataset_id=${datasetId}`, [datasetId]);
+  const mejorModelo = useApi<MejorModelo>(`/api/evaluation/best-model?dataset_id=${datasetId}`, [datasetId]);
+  const metrics = useApi<MetricaModelo[]>(`/api/evaluation/metrics?dataset_id=${datasetId}`, [datasetId]);
+  const reglas = useApi<{ reglas: string }>(`/api/evaluation/decision-tree-rules?dataset_id=${datasetId}`, [datasetId]);
 
   return (
     <div>

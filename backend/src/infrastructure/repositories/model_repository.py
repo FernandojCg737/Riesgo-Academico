@@ -1,12 +1,13 @@
 import joblib
 from pathlib import Path
 from typing import Any
-from src.infrastructure.config.settings import settings, MODEL_FINAL_PATH
+from src.infrastructure.config.settings import settings
 
 class ModelRepository:
-    def __init__(self, models_dir: Path = None):
-        self.models_dir = models_dir or settings.model_storage_path
-        self.final_path = MODEL_FINAL_PATH
+    def __init__(self, dataset_id: int = 1, models_dir: Path = None):
+        self.models_dir = models_dir or (settings.model_storage_path / str(dataset_id))
+        self.models_dir.mkdir(parents=True, exist_ok=True)
+        self.final_path = self.models_dir / "modelo_final.pkl"
 
     def guardar_modelo(self, nombre: str, pipeline: Any) -> Path:
         ruta = self.models_dir / f"modelo_{nombre}.pkl"

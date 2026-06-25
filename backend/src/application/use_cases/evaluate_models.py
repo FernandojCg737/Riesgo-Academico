@@ -19,18 +19,20 @@ NOMBRES_MODELOS = [
 class EvaluateModels:
     def __init__(
         self,
+        dataset_id: int,
         academic_repo: AcademicRepository = None,
         model_repo: ModelRepository = None,
         preproc_service: PreprocessingService = None,
     ):
+        self.dataset_id = dataset_id
         self.academic_repo = academic_repo or AcademicRepository()
-        self.model_repo = model_repo or ModelRepository()
+        self.model_repo = model_repo or ModelRepository(dataset_id=dataset_id)
         self.preproc_service = preproc_service or PreprocessingService()
 
     def ejecutar(self) -> dict:
-        print("Ejecutando caso de uso: Evaluar Modelos...")
+        print(f"Ejecutando caso de uso: Evaluar Modelos (dataset_id={self.dataset_id})...")
 
-        df = self.academic_repo.cargar_modelo_dataset()
+        df = self.academic_repo.cargar_modelo_dataset(self.dataset_id)
         X, y, groups = self.preproc_service.separar_predictores_y_objetivo(df)
 
         gss = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=settings.RANDOM_STATE)
@@ -89,7 +91,10 @@ class EvaluateModels:
                 }
 
                 modelo_id = session.execute(
-                    select(ModeloEntrenado.id).where(ModeloEntrenado.nombre_interno == nombre)
+                    select(ModeloEntrenado.id).where(
+                        ModeloEntrenado.nombre_interno == nombre,
+                        ModeloEntrenado.dataset_id == self.dataset_id,
+                    )
                 ).scalar_one()
 
                 session.execute(delete(EvaluacionModelo).where(EvaluacionModelo.modelo_id == modelo_id))

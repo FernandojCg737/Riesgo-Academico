@@ -11,11 +11,20 @@ router = APIRouter(prefix="/api/academic", tags=["academic-data"])
 
 
 @router.get("/summary")
-def obtener_resumen(db: Session = Depends(get_db)):
-    total_registros = db.scalar(select(func.count(RegistroAcademico.id))) or 0
-    estudiantes_unicos = db.scalar(select(func.count(func.distinct(RegistroAcademico.id_estudiante)))) or 0
-    materias_unicas = db.scalar(select(func.count(func.distinct(RegistroAcademico.codigo_materia)))) or 0
-    en_riesgo = db.scalar(select(func.count(RegistroAcademico.id)).where(RegistroAcademico.riesgo_academico == 1)) or 0
+def obtener_resumen(dataset_id: int = Query(...), db: Session = Depends(get_db)):
+    base = select(RegistroAcademico).where(RegistroAcademico.dataset_id == dataset_id)
+    total_registros = db.scalar(select(func.count()).select_from(base.subquery())) or 0
+    estudiantes_unicos = db.scalar(
+        select(func.count(func.distinct(RegistroAcademico.id_estudiante))).where(RegistroAcademico.dataset_id == dataset_id)
+    ) or 0
+    materias_unicas = db.scalar(
+        select(func.count(func.distinct(RegistroAcademico.codigo_materia))).where(RegistroAcademico.dataset_id == dataset_id)
+    ) or 0
+    en_riesgo = db.scalar(
+        select(func.count(RegistroAcademico.id)).where(
+            RegistroAcademico.dataset_id == dataset_id, RegistroAcademico.riesgo_academico == 1
+        )
+    ) or 0
 
     tasa_riesgo = round((en_riesgo / total_registros) * 100, 2) if total_registros else 0.0
 
@@ -30,13 +39,14 @@ def obtener_resumen(db: Session = Depends(get_db)):
 
 @router.get("/records")
 def obtener_registros(
+    dataset_id: int = Query(...),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=10000),
     carrera_alumno: Optional[str] = None,
     nivel_materia: Optional[int] = None,
     db: Session = Depends(get_db),
 ):
-    query = select(RegistroAcademico)
+    query = select(RegistroAcademico).where(RegistroAcademico.dataset_id == dataset_id)
     if carrera_alumno:
         query = query.where(RegistroAcademico.carrera_alumno == carrera_alumno.strip().upper())
     if nivel_materia is not None:

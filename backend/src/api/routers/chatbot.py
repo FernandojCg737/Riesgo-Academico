@@ -43,6 +43,7 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: List[ChatMessage]
+    dataset_id: int = 1
 
 
 @router.post("/ask")
@@ -51,7 +52,7 @@ def preguntar(payload: ChatRequest, request: Request, db: Session = Depends(get_
 
     try:
         respuesta = ChatbotService().responder(
-            db, [m.model_dump() for m in payload.messages]
+            db, [m.model_dump() for m in payload.messages], dataset_id=payload.dataset_id
         )
     except RuntimeError as e:
         raise HTTPException(status_code=503, detail=str(e))

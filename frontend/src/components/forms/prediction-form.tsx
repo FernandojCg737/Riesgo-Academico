@@ -15,6 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { apiClient, ApiError } from "@/lib/api-client";
 import type { PrediccionResponse } from "@/lib/types";
+import { useDataset } from "@/contexts/dataset-context";
 
 const schema = z.object({
   carrera_alumno: z.string().min(1, "Requerido").max(20),
@@ -36,6 +37,7 @@ const ALERTA_COLOR: Record<string, string> = {
 };
 
 export function PredictionForm() {
+  const { datasetId } = useDataset();
   const [resultado, setResultado] = useState<PrediccionResponse | null>(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -57,6 +59,7 @@ export function PredictionForm() {
     setResultado(null);
     try {
       const respuesta = await apiClient.post<PrediccionResponse>("/api/predict", {
+        dataset_id: datasetId,
         carrera_alumno: values.carrera_alumno,
         codigo_materia: values.codigo_materia,
         nivel_materia: Number(values.nivel_materia),

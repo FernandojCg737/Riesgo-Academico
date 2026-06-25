@@ -9,10 +9,11 @@ class PrepareAcademicDataset:
     def __init__(self, repository: AcademicRepository = None):
         self.repository = repository or AcademicRepository()
 
-    def ejecutar(self) -> None:
-        print("Ejecutando caso de uso: Preparar Dataset Académico...")
+    def ejecutar(self, dataset_id: int, df: pd.DataFrame = None) -> int:
+        print(f"Ejecutando caso de uso: Preparar Dataset Académico (dataset_id={dataset_id})...")
 
-        df = self.repository.cargar_raw()
+        if df is None:
+            df = self.repository.cargar_raw()
 
         df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
 
@@ -67,5 +68,6 @@ class PrepareAcademicDataset:
             df = df[~invalidos_nivel]
         df["nivel_materia"] = df["nivel_materia"].astype(int)
 
-        self.repository.persistir_registros(df)
+        self.repository.persistir_registros(df, dataset_id)
         print("Procesamiento académico completado de forma limpia.")
+        return len(df)

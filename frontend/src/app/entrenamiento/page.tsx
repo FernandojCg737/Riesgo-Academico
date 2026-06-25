@@ -11,6 +11,7 @@ import { apiClient, ApiError } from "@/lib/api-client";
 import { useProcesoConPolling } from "@/hooks/use-polling";
 import type { EstadoProceso } from "@/lib/types";
 import { BrainCircuit, LineChart, Loader2 } from "lucide-react";
+import { useDataset } from "@/contexts/dataset-context";
 
 function EstadoBadge({ status }: { status: EstadoProceso["status"] }) {
   const variantes: Record<EstadoProceso["status"], string> = {
@@ -24,15 +25,16 @@ function EstadoBadge({ status }: { status: EstadoProceso["status"] }) {
 }
 
 export default function EntrenamientoPage() {
-  const entrenamiento = useProcesoConPolling("/api/train/status");
-  const evaluacion = useProcesoConPolling("/api/evaluation/status");
+  const { datasetId } = useDataset();
+  const entrenamiento = useProcesoConPolling(`/api/train/status?dataset_id=${datasetId}`);
+  const evaluacion = useProcesoConPolling(`/api/evaluation/status?dataset_id=${datasetId}`);
   const [lanzandoEntrenamiento, setLanzandoEntrenamiento] = useState(false);
   const [lanzandoEvaluacion, setLanzandoEvaluacion] = useState(false);
 
   async function lanzarEntrenamiento() {
     setLanzandoEntrenamiento(true);
     try {
-      await apiClient.post("/api/train");
+      await apiClient.post("/api/train", { dataset_id: datasetId });
       entrenamiento.setEstado({ status: "running", error: null });
       entrenamiento.iniciarPolling();
       toast.success("Entrenamiento iniciado en segundo plano.");
@@ -47,7 +49,7 @@ export default function EntrenamientoPage() {
   async function lanzarEvaluacion() {
     setLanzandoEvaluacion(true);
     try {
-      await apiClient.post("/api/evaluation/run");
+      await apiClient.post("/api/evaluation/run", { dataset_id: datasetId });
       evaluacion.setEstado({ status: "running", error: null });
       evaluacion.iniciarPolling();
       toast.success("Evaluación y selección del mejor modelo iniciadas.");

@@ -14,9 +14,11 @@ import { useApi } from "@/hooks/use-api";
 import { useProcesoConPolling } from "@/hooks/use-polling";
 import type { CurvaRoc, ImportanciaVariable, MejorModelo, MetricaModelo } from "@/lib/types";
 import { Loader2 } from "lucide-react";
+import { useDataset } from "@/contexts/dataset-context";
 
 export default function EvaluacionPage() {
-  const proceso = useProcesoConPolling("/api/evaluation/status");
+  const { datasetId } = useDataset();
+  const proceso = useProcesoConPolling(`/api/evaluation/status?dataset_id=${datasetId}`);
   const enCurso = proceso.estado.status === "running" || proceso.estado.status === "started";
 
   // Solo se refresca cuando el proceso transiciona de "en curso" a "done",
@@ -31,10 +33,13 @@ export default function EvaluacionPage() {
     estadoAnterior.current = proceso.estado.status;
   }, [proceso.estado.status]);
 
-  const metrics = useApi<MetricaModelo[]>("/api/evaluation/metrics", [refreshKey]);
-  const mejorModelo = useApi<MejorModelo>("/api/evaluation/best-model", [refreshKey]);
-  const importancia = useApi<ImportanciaVariable[]>("/api/evaluation/feature-importance?grouped=true", [refreshKey]);
-  const roc = useApi<CurvaRoc>("/api/charts/model/roc-curve", [refreshKey]);
+  const metrics = useApi<MetricaModelo[]>(`/api/evaluation/metrics?dataset_id=${datasetId}`, [refreshKey, datasetId]);
+  const mejorModelo = useApi<MejorModelo>(`/api/evaluation/best-model?dataset_id=${datasetId}`, [refreshKey, datasetId]);
+  const importancia = useApi<ImportanciaVariable[]>(
+    `/api/evaluation/feature-importance?grouped=true&dataset_id=${datasetId}`,
+    [refreshKey, datasetId]
+  );
+  const roc = useApi<CurvaRoc>(`/api/charts/model/roc-curve?dataset_id=${datasetId}`, [refreshKey, datasetId]);
 
   const modeloFinal = metrics.data?.find((m) => m.es_modelo_final);
 

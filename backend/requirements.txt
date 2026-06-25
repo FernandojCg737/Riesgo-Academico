@@ -14,3 +14,5 @@ shap
 pytest
 httpx
 google-genai
+openpyxl
+python-multipart

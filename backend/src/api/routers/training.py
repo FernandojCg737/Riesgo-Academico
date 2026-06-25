@@ -1,32 +1,38 @@
-from fastapi import APIRouter, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Body, Query
 
 from src.application.use_cases.train_models import TrainModels
 
 router = APIRouter(prefix="/api/train", tags=["training"])
 
-_estado_entrenamiento = {"status": "idle", "error": None}
+_estados_entrenamiento: dict[int, dict] = {}
 
 
-def _ejecutar_entrenamiento():
-    _estado_entrenamiento["status"] = "running"
-    _estado_entrenamiento["error"] = None
+def _estado_de(dataset_id: int) -> dict:
+    return _estados_entrenamiento.setdefault(dataset_id, {"status": "idle", "error": None})
+
+
+def _ejecutar_entrenamiento(dataset_id: int):
+    estado = _estado_de(dataset_id)
+    estado["status"] = "running"
+    estado["error"] = None
     try:
-        TrainModels().ejecutar()
-        _estado_entrenamiento["status"] = "done"
+        TrainModels(dataset_id=dataset_id).ejecutar()
+        estado["status"] = "done"
     except Exception as e:
-        _estado_entrenamiento["status"] = "error"
-        _estado_entrenamiento["error"] = str(e)
+        estado["status"] = "error"
+        estado["error"] = str(e)
 
 
 @router.post("")
-def iniciar_entrenamiento(background_tasks: BackgroundTasks):
-    if _estado_entrenamiento["status"] == "running":
+def iniciar_entrenamiento(background_tasks: BackgroundTasks, dataset_id: int = Body(..., embed=True)):
+    estado = _estado_de(dataset_id)
+    if estado["status"] == "running":
         return {"status": "running", "mensaje": "Ya hay un entrenamiento en curso."}
 
-    background_tasks.add_task(_ejecutar_entrenamiento)
+    background_tasks.add_task(_ejecutar_entrenamiento, dataset_id)
     return {"status": "started", "mensaje": "Entrenamiento iniciado en segundo plano."}
 
 
 @router.get("/status")
-def obtener_estado_entrenamiento():
-    return _estado_entrenamiento
+def obtener_estado_entrenamiento(dataset_id: int = Query(...)):
+    return _estado_de(dataset_id)

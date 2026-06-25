@@ -12,8 +12,8 @@ router = APIRouter(prefix="/api/charts", tags=["charts"])
 _servicio = ChartDataService()
 
 
-def _cargar_academico():
-    df = AcademicRepository().cargar_completo_limpio()
+def _cargar_academico(dataset_id: int):
+    df = AcademicRepository().cargar_completo_limpio(dataset_id)
     if df.empty:
         raise HTTPException(status_code=404, detail="No hay datos académicos ingeridos todavía.")
     return df
@@ -27,50 +27,50 @@ def _cargar_encuesta():
 
 
 @router.get("/academic/distribucion-notas")
-def distribucion_notas():
-    return _servicio.obtener_distribucion_notas(_cargar_academico())
+def distribucion_notas(dataset_id: int = Query(...)):
+    return _servicio.obtener_distribucion_notas(_cargar_academico(dataset_id))
 
 
 @router.get("/academic/cantidad-riesgo")
-def cantidad_riesgo():
-    return _servicio.obtener_cantidad_riesgo(_cargar_academico())
+def cantidad_riesgo(dataset_id: int = Query(...)):
+    return _servicio.obtener_cantidad_riesgo(_cargar_academico(dataset_id))
 
 
 @router.get("/academic/riesgo-por-nivel")
-def riesgo_por_nivel():
-    return _servicio.obtener_riesgo_por_nivel(_cargar_academico())
+def riesgo_por_nivel(dataset_id: int = Query(...)):
+    return _servicio.obtener_riesgo_por_nivel(_cargar_academico(dataset_id))
 
 
 @router.get("/academic/riesgo-por-carrera")
-def riesgo_por_carrera():
-    return _servicio.obtener_riesgo_por_carrera(_cargar_academico())
+def riesgo_por_carrera(dataset_id: int = Query(...)):
+    return _servicio.obtener_riesgo_por_carrera(_cargar_academico(dataset_id))
 
 
 @router.get("/academic/top10-materias")
-def top10_materias(min_registros: int = Query(30, ge=1)):
-    return _servicio.obtener_top10_materias_riesgo(_cargar_academico(), min_registros=min_registros)
+def top10_materias(dataset_id: int = Query(...), min_registros: int = Query(30, ge=1)):
+    return _servicio.obtener_top10_materias_riesgo(_cargar_academico(dataset_id), min_registros=min_registros)
 
 
 @router.get("/academic/riesgo-por-repite")
-def riesgo_por_repite():
-    return _servicio.obtener_riesgo_por_repite(_cargar_academico())
+def riesgo_por_repite(dataset_id: int = Query(...)):
+    return _servicio.obtener_riesgo_por_repite(_cargar_academico(dataset_id))
 
 
 @router.get("/academic/ppa-vs-riesgo")
-def ppa_vs_riesgo():
-    return _servicio.obtener_ppa_vs_riesgo(_cargar_academico())
+def ppa_vs_riesgo(dataset_id: int = Query(...)):
+    return _servicio.obtener_ppa_vs_riesgo(_cargar_academico(dataset_id))
 
 
 @router.get("/academic/ppac-vs-riesgo")
-def ppac_vs_riesgo():
-    return _servicio.obtener_ppac_vs_riesgo(_cargar_academico())
+def ppac_vs_riesgo(dataset_id: int = Query(...)):
+    return _servicio.obtener_ppac_vs_riesgo(_cargar_academico(dataset_id))
 
 
 @router.get("/model/roc-curve")
-def roc_curve_modelo_final():
+def roc_curve_modelo_final(dataset_id: int = Query(...)):
     from sklearn.model_selection import GroupShuffleSplit
 
-    df = AcademicRepository().cargar_modelo_dataset()
+    df = AcademicRepository().cargar_modelo_dataset(dataset_id)
     if df.empty:
         raise HTTPException(status_code=404, detail="No hay datos académicos ingeridos todavía.")
 
@@ -80,7 +80,7 @@ def roc_curve_modelo_final():
     X_test, y_test = X.iloc[test_idx], y.iloc[test_idx]
 
     try:
-        pipeline = ModelRepository().cargar_modelo_final()
+        pipeline = ModelRepository(dataset_id=dataset_id).cargar_modelo_final()
     except FileNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
 

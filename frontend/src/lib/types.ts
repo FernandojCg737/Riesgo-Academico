@@ -1,3 +1,11 @@
+export interface Dataset {
+  id: number;
+  nombre: string;
+  fuente_archivo: string;
+  n_registros: number;
+  creado_en: string | null;
+}
+
 export interface ResumenAcademico {
   total_registros: number;
   estudiantes_unicos: number;
@@ -27,6 +35,7 @@ export interface RegistrosAcademicosResponse {
 }
 
 export interface PrediccionRequest {
+  dataset_id: number;
   carrera_alumno: string;
   codigo_materia: string;
   nivel_materia: number;

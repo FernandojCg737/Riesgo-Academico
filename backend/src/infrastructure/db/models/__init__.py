@@ -3,6 +3,7 @@ from src.infrastructure.db.models.survey_response_model import RespuestaEncuesta
 from src.infrastructure.db.models.trained_model_model import ModeloEntrenado
 from src.infrastructure.db.models.model_evaluation_model import EvaluacionModelo
 from src.infrastructure.db.models.prediction_log_model import HistorialPrediccion
+from src.infrastructure.db.models.dataset_model import Dataset
 
 __all__ = [
     "RegistroAcademico",
@@ -10,4 +11,5 @@ __all__ = [
     "ModeloEntrenado",
     "EvaluacionModelo",
     "HistorialPrediccion",
+    "Dataset",
 ]

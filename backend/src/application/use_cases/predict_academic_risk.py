@@ -3,8 +3,8 @@ from src.infrastructure.repositories.model_repository import ModelRepository
 from src.application.services.prediction_service import PredictionService
 
 class PredictAcademicRisk:
-    def __init__(self, model_repo: ModelRepository = None):
-        self.model_repo = model_repo or ModelRepository()
+    def __init__(self, dataset_id: int = 1, model_repo: ModelRepository = None):
+        self.model_repo = model_repo or ModelRepository(dataset_id=dataset_id)
         self.prediction_service = PredictionService(self.model_repo)
 
     def ejecutar(

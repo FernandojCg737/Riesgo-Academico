@@ -21,17 +21,21 @@ Contexto actual del sistema:
 
 
 class ChatbotService:
-    def construir_contexto(self, db: Session) -> str:
-        total_registros = db.scalar(select(func.count(RegistroAcademico.id))) or 0
+    def construir_contexto(self, db: Session, dataset_id: int = 1) -> str:
+        total_registros = db.scalar(
+            select(func.count(RegistroAcademico.id)).where(RegistroAcademico.dataset_id == dataset_id)
+        ) or 0
         en_riesgo = db.scalar(
-            select(func.count(RegistroAcademico.id)).where(RegistroAcademico.riesgo_academico == 1)
+            select(func.count(RegistroAcademico.id)).where(
+                RegistroAcademico.dataset_id == dataset_id, RegistroAcademico.riesgo_academico == 1
+            )
         ) or 0
         tasa_riesgo = round((en_riesgo / total_registros) * 100, 2) if total_registros else 0.0
 
         fila_modelo = db.execute(
             select(ModeloEntrenado, EvaluacionModelo)
             .join(EvaluacionModelo, EvaluacionModelo.modelo_id == ModeloEntrenado.id)
-            .where(ModeloEntrenado.es_modelo_final.is_(True))
+            .where(ModeloEntrenado.dataset_id == dataset_id, ModeloEntrenado.es_modelo_final.is_(True))
         ).first()
 
         if fila_modelo:
@@ -50,7 +54,7 @@ class ChatbotService:
             f"{info_modelo}"
         )
 
-    def responder(self, db: Session, mensajes: List[Dict[str, str]]) -> str:
+    def responder(self, db: Session, mensajes: List[Dict[str, str]], dataset_id: int = 1) -> str:
         api_keys = [k for k in (settings.gemini_api_key, settings.gemini_api_key_backup) if k]
         if not api_keys:
             raise RuntimeError("Chatbot no configurado: falta GEMINI_API_KEY")
@@ -59,7 +63,7 @@ class ChatbotService:
         from google.genai import errors as genai_errors
         from google.genai import types
 
-        contexto = self.construir_contexto(db)
+        contexto = self.construir_contexto(db, dataset_id)
         contenidos = [
             types.Content(
                 role="model" if m["role"] == "assistant" else "user",

@@ -11,6 +11,7 @@ from src.api.routers import (
     evaluation,
     charts,
     chatbot,
+    datasets,
 )
 
 app = FastAPI(title="Academic Risk Predictor API")
@@ -31,3 +32,4 @@ app.include_router(training.router)
 app.include_router(evaluation.router)
 app.include_router(charts.router)
 app.include_router(chatbot.router)
+app.include_router(datasets.router)

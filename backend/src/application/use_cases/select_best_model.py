@@ -9,17 +9,21 @@ NOMBRES_BASE = ["logistic_regression", "decision_tree", "random_forest"]
 
 
 class SelectBestModel:
-    def __init__(self, model_repo: ModelRepository = None):
-        self.model_repo = model_repo or ModelRepository()
+    def __init__(self, dataset_id: int, model_repo: ModelRepository = None):
+        self.dataset_id = dataset_id
+        self.model_repo = model_repo or ModelRepository(dataset_id=dataset_id)
 
     def ejecutar(self) -> str:
-        print("Ejecutando caso de uso: Seleccionar Mejor Modelo...")
+        print(f"Ejecutando caso de uso: Seleccionar Mejor Modelo (dataset_id={self.dataset_id})...")
 
         with SessionLocal() as session:
             filas = session.execute(
                 select(ModeloEntrenado, EvaluacionModelo)
                 .join(EvaluacionModelo, EvaluacionModelo.modelo_id == ModeloEntrenado.id)
-                .where(ModeloEntrenado.nombre_interno.in_(NOMBRES_BASE))
+                .where(
+                    ModeloEntrenado.nombre_interno.in_(NOMBRES_BASE),
+                    ModeloEntrenado.dataset_id == self.dataset_id,
+                )
             ).all()
 
             if not filas:
@@ -38,7 +42,11 @@ class SelectBestModel:
             pipeline_ganador = self.model_repo.cargar_modelo(mejor_id)
             self.model_repo.guardar_modelo_final(pipeline_ganador)
 
-            session.execute(update(ModeloEntrenado).values(es_modelo_final=False))
+            session.execute(
+                update(ModeloEntrenado)
+                .where(ModeloEntrenado.dataset_id == self.dataset_id)
+                .values(es_modelo_final=False)
+            )
             session.execute(
                 update(ModeloEntrenado)
                 .where(ModeloEntrenado.id == modelo_ganador.id)

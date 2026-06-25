@@ -11,6 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { apiClient, ApiError } from "@/lib/api-client";
 import type { ChatMessage } from "@/lib/types";
+import { useDataset } from "@/contexts/dataset-context";
 
 interface SpeechRecognitionResultLike {
   resultIndex: number;
@@ -69,6 +70,7 @@ const PREGUNTAS_SUGERIDAS: { categoria: string; preguntas: string[] }[] = [
 ];
 
 export function ChatPanel() {
+  const { datasetId } = useDataset();
   const [mensajes, setMensajes] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -97,6 +99,7 @@ export function ChatPanel() {
     try {
       const { respuesta } = await apiClient.post<{ respuesta: string }>("/api/chatbot/ask", {
         messages: nuevoHistorial,
+        dataset_id: datasetId,
       });
       setMensajes([...nuevoHistorial, { role: "assistant", content: respuesta }]);
       if (autoHablar) leerEnVozAlta(respuesta);

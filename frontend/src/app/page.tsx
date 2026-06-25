@@ -8,9 +8,14 @@ import { useAutoPolling } from "@/hooks/use-polling";
 import type { ResumenAcademico } from "@/lib/types";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Database, GraduationCap, TrendingUp, BookText, RefreshCw } from "lucide-react";
+import { useDataset } from "@/contexts/dataset-context";
 
 export default function HomePage() {
-  const { data: resumen, loading, updatedAt, refetch } = useAutoPolling<ResumenAcademico>("/api/academic/summary", 15000);
+  const { datasetId } = useDataset();
+  const { data: resumen, loading, updatedAt, refetch } = useAutoPolling<ResumenAcademico>(
+    `/api/academic/summary?dataset_id=${datasetId}`,
+    15000
+  );
   const error = !loading && !resumen;
 
   return (

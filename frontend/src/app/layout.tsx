@@ -6,6 +6,8 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PageTransition } from "@/components/layout/page-transition";
+import { DatasetProvider } from "@/contexts/dataset-context";
+import { DatasetBar } from "@/components/layout/dataset-bar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,13 +42,16 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Sidebar />
-          <MobileNav />
-          <main className="md:pl-64">
-            <div className="max-w-6xl mx-auto px-4 pt-20 pb-8 md:px-6 md:pt-8">
-              <PageTransition>{children}</PageTransition>
-            </div>
-          </main>
+          <DatasetProvider>
+            <Sidebar />
+            <MobileNav />
+            <main className="md:pl-64">
+              <div className="max-w-6xl mx-auto px-4 pt-20 pb-8 md:px-6 md:pt-8">
+                <DatasetBar />
+                <PageTransition>{children}</PageTransition>
+              </div>
+            </main>
+          </DatasetProvider>
           <Toaster />
         </ThemeProvider>
       </body>
