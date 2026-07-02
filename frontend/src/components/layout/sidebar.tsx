@@ -14,7 +14,7 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       <div className="flex items-center gap-3 px-6 h-16 border-b border-sidebar-border">
-        <Image src="/branding/mascota-robot.png" alt="Riesgo Académico" width={44} height={44} className="rounded-full" />
+        <Image src="/branding/mascota-robot.jpeg" alt="Riesgo Académico" width={44} height={44} className="rounded-full" />
         <span className="font-semibold text-sm leading-tight">
           Riesgo Académico
           <br />

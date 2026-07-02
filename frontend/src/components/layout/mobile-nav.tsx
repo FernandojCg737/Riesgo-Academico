@@ -21,7 +21,7 @@ export function MobileNav() {
     <>
       <header className="md:hidden fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-sidebar-border bg-sidebar text-sidebar-foreground px-4">
         <div className="flex items-center gap-2">
-          <Image src="/branding/mascota-robot.png" alt="Riesgo Académico" width={40} height={40} className="rounded-full" />
+          <Image src="/branding/mascota-robot.jpeg" alt="Riesgo Académico" width={40} height={40} className="rounded-full" />
           <span className="font-semibold text-sm">Riesgo Académico</span>
         </div>
         <Button variant="ghost" size="sm" onClick={() => setOpen(true)} aria-label="Abrir menú" className="text-sidebar-foreground hover:bg-sidebar-accent">
@@ -45,7 +45,7 @@ export function MobileNav() {
       >
         <div className="flex items-center justify-between gap-2 px-4 h-14 border-b border-sidebar-border">
           <div className="flex items-center gap-2">
-            <Image src="/branding/mascota-robot.png" alt="Riesgo Académico" width={40} height={40} className="rounded-full" />
+            <Image src="/branding/mascota-robot.jpeg" alt="Riesgo Académico" width={40} height={40} className="rounded-full" />
             <span className="font-semibold text-sm">Riesgo Académico</span>
           </div>
           <Button variant="ghost" size="sm" onClick={() => setOpen(false)} aria-label="Cerrar menú" className="text-sidebar-foreground hover:bg-sidebar-accent">
