@@ -22,6 +22,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Riesgo Académico - Analytics",
   description: "Sistema Predictivo de Riesgo Académico Estudiantil",
+  icons: { icon: "/branding/mascota-robot.jpeg" },
 };
 
 export default function RootLayout({
